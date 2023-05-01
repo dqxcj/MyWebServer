@@ -1,6 +1,6 @@
 CXX = g++
 # 如果报错记得修改为c++14
-CFLAGS = -stdc++11 -O2 -Wall -g
+CFLAGS = -std=c++14 -O2 -g
 
 TARGET = server
 OBJS = ./src/server/*.cc ./src/test/*.cc

@@ -16,7 +16,7 @@ int main() {
     struct sockaddr_in server_addr;
     inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr.s_addr);
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(9999);
+    server_addr.sin_port = htons(10000);
     // 连接服务器
     int ret = connect(fd, (struct sockaddr*)&server_addr, sizeof(server_addr));
     if (ret == -1) {

@@ -1,6 +1,6 @@
-#include "include/webserver.h"
+#include "../include/webserver.h"
 
 int main() {
-    WebServer webserver(1);
+    WebServer webserver(10000, -1);
     return 0;
 }

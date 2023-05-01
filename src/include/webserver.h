@@ -10,20 +10,23 @@
 #include <ctype.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 // cpp库
+#include <iostream>
 #include <memory>
 // 其它项目的h文件
 // 本项目的h文件
-#include "include/epoller.h"
+#include "epoller.h"
 
 class WebServer {
 public:
-    WebServer(int);
+    WebServer(int port, int time_out_ms);
+    ~WebServer();
 private:
     bool InitSocket_();
-    int time_out_ms_;
-    int port_;
-    int listen_fd_;
-    std::unique_ptr<Epoller> epoller_;
+    int time_out_ms_; // epoll_wait的超时时间
+    int port_; // 服务端监听的端口
+    int listen_fd_; // 服务端监听的文件描述符
+    std::unique_ptr<Epoller> epoller_; // 指向了一个Epoller类
 };
 #endif
