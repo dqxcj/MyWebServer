@@ -20,6 +20,7 @@
 
 class WebServer {
 public:
+    WebServer() = default;
     WebServer(int port, int time_out_ms);
     ~WebServer();
 private:

@@ -17,6 +17,7 @@ const int kTimeOutMs = -1; // epoll_wait中的超时参数默认值，-1阻塞�
 
 class Epoller {
 public:
+    // Epoller() = default; // 下面的构造函数使用了默认实参，这里不需要默认构造函数了
     explicit Epoller(int max_events_nums = kMaxEventsNums);
     ~Epoller();
     bool AddFd(int fd, uint32_t events);
