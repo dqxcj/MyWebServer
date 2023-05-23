@@ -1,7 +1,7 @@
 #ifndef SOCKET_H
 #define SOCKET_H
-#include <MyError.h>
-#include <InetAddress.h>
+#include "MyError.h"
+#include "InetAddress.h"
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -14,8 +14,9 @@ public:
 
     void Listen();
 
-    void Accept(InetAddress *addr);
+    int Accept(InetAddress *clnt_addr);
 
+    int GetFd();
 private:
     int fd_; // 该socket的文件描述符
 };

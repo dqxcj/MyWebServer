@@ -2,11 +2,11 @@
 CC = g++
 FLAGS = -g
 
-serv: server.cpp
-	$(CC) $< -o $@ $(FLAGS)
+serv: server.cpp InetAddress.cpp Socket.cpp Epoll.cpp Channel.cpp
+	$(CC) $^ -o $@ $(FLAGS)
 
 clnt: client.cpp
-	$(CC) $< -o $@ $(FLAGS)
+	$(CC) $^ -o $@ $(FLAGS)
 	
 run: serv clnt
 	./serv
