@@ -1,5 +1,18 @@
 #include "Epoll.h"
 
+Epoll::Epoll():  
+    max_events_num_(MAX_EVENTS_NUM),
+    events_(max_events_num_) {
+    // 新建epoll
+    epfd_ = epoll_create1(0);
+    ErrIf(epfd_ == -1, "server error: epoll_create1()");
+    
+    // 初始化为0
+    for(auto &ev : events_) {
+        memset(&ev, 0, sizeof(ev));
+    }
+}
+
 /**
  * @description: 封装了epoll_create1函数
  * @param {int} flags epoll_create1函数的flags参数

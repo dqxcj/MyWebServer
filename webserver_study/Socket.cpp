@@ -6,6 +6,8 @@ Socket::Socket() {
     ErrIf(fd_ == -1, "server error: socket()");
 }
 
+Socket::Socket(int fd): fd_(fd) {}
+
 void Socket::Bind(InetAddress *addr) {
     ErrIf(bind(fd_, (sockaddr *)&addr->addr_, addr->addr_len_) == -1, "server error: bind()");
 }
@@ -23,4 +25,8 @@ int Socket::Accept(InetAddress *clnt_addr) {
 
 int Socket::GetFd() {
     return fd_;
+}
+
+void Socket::SetNonBlock() {
+    fcntl(fd_, F_SETFL, fcntl(fd_, F_GETFL) | O_NONBLOCK); // 设置成非阻塞
 }

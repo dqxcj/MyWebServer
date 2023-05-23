@@ -1,7 +1,7 @@
 #include "Channel.h"
-#include "Epoll.h"
+#include "EventLoop.h"
 
-Channel::Channel(int fd, Epoll *ep): fd_(fd), ep_(ep), events_(0), the_moment_events_(0), is_in_epoll_(false) {}
+Channel::Channel(int fd, EventLoop *loop): fd_(fd), loop_(loop), events_(0), the_moment_events_(0), is_in_epoll_(false) {}
 
 int Channel::GetFd() {
     return fd_;
@@ -29,6 +29,13 @@ void Channel::SetIsInEpoll(bool is_in_epoll) {
 void Channel::EnableRead() {
     events_ = EPOLLIN | EPOLLET;    // 可读 ET模式
     fcntl(fd_, F_SETFL, fcntl(fd_, F_GETFL) | O_NONBLOCK); // 设置成非阻塞模式
-    ep_->UpdateChannel(this);
+    loop_->UpdateChannel(this);
 }
 
+void Channel::HandleEvent() {
+    call_back_();
+}
+
+void Channel::SetCallBack(std::function<void()> &&call_back) {
+    call_back_ = call_back;
+}

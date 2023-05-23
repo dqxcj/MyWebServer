@@ -5,10 +5,13 @@
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
 
 class Socket {
 public:
     Socket();
+
+    Socket(int fd);
 
     void Bind(InetAddress *addr);
 
@@ -17,6 +20,8 @@ public:
     int Accept(InetAddress *clnt_addr);
 
     int GetFd();
+
+    void SetNonBlock();
 private:
     int fd_; // 该socket的文件描述符
 };

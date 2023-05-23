@@ -2,7 +2,7 @@
 CC = g++
 FLAGS = -g
 
-serv: server.cpp InetAddress.cpp Socket.cpp Epoll.cpp Channel.cpp
+serv: server.cpp InetAddress.cpp Socket.cpp Epoll.cpp Channel.cpp EventLoop.cpp Server.cpp
 	$(CC) $^ -o $@ $(FLAGS)
 
 clnt: client.cpp
