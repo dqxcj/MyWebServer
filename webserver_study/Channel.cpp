@@ -23,7 +23,7 @@ void Channel::SetIsInEpoll(bool is_in_epoll) {
 }
 
 /**
- * @description: 将当前channel监听的事件设置为可读，并且是ET模式，对应fd设置为非阻塞
+ * @description: 将当前channel监听的事件设置为可读，并且是ET模式，对应fd设置为非阻塞，并将channel添加到epoll的红黑树上
  * @return {void}
  */
 void Channel::EnableRead() {
