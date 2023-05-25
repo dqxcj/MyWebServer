@@ -22,6 +22,8 @@ public:
     int GetFd();
 
     void SetNonBlock();
+
+    void Connect(InetAddress *serv_addr);
 private:
     int fd_; // 该socket的文件描述符
 };

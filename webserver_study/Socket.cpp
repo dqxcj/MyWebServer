@@ -30,3 +30,7 @@ int Socket::GetFd() {
 void Socket::SetNonBlock() {
     fcntl(fd_, F_SETFL, fcntl(fd_, F_GETFL) | O_NONBLOCK); // 设置成非阻塞
 }
+
+void Socket::Connect(InetAddress *serv_addr) {
+    ErrIf(connect(fd_, (sockaddr *)&serv_addr->addr_, serv_addr->addr_len_) == -1, "client error: accept()");
+}

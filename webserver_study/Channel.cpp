@@ -33,7 +33,7 @@ void Channel::EnableRead() {
 }
 
 void Channel::HandleEvent() {
-    call_back_();
+    loop_->AddTask(call_back_);
 }
 
 void Channel::SetCallBack(std::function<void()> &&call_back) {
