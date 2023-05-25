@@ -8,6 +8,7 @@
 class Socket;
 class Channel;
 class EventLoop;
+class Buffer;
 
 
 class Connection {
@@ -20,6 +21,7 @@ private:
     EventLoop *loop_;
     Channel *channel_;
     Socket *clnt_;
+    Buffer *read_buffer_;
     std::function<void(Socket*)> delete_connection_call_back_;
 };
 

@@ -6,11 +6,12 @@
 #include "Buffer.h"
 #include "InetAddress.h"
 #include "Socket.h"
-#include "../src/include/MyThreadPool/ThreadPool.h"
+#include "ThreadPool.h"
+#include <unistd.h>
 
 using namespace std;
 
-void oneClient(int msgs, int wait){
+void oneClient(int msgs, int wait, int i){
     Socket *sock = new Socket();
     InetAddress *addr = new InetAddress("127.0.0.1", 8889);
     sock->Connect(addr);
@@ -76,12 +77,11 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    ThreadPool *poll = new ThreadPool(threads, 0);
-    poll->SetStart();
-    std::function<void()> func = std::bind(oneClient, msgs, wait);
+    ThreadPool *poll = new ThreadPool(threads);
     for(int i = 0; i < threads; ++i){
-        poll->AddTask(func);
+        poll->AddTask(oneClient, msgs, wait, i);
     }
+    sleep(10);
     delete poll;
     return 0;
 }

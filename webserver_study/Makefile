@@ -11,6 +11,9 @@ clnt: client.cpp
 test: test.cpp InetAddress.cpp Socket.cpp Buffer.cpp 
 	$(CC) $^ -o $@ $(FLAGS)
 
+tp_test: tp_test.cpp
+	$(CC) $^ -o $@ $(FLAGS)
+
 .PHONY: clean
 clean: 
 	rm -rf serv clnt test

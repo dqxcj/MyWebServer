@@ -18,7 +18,6 @@ public:
 private:
     EventLoop *loop_;
     Socket *serv_sock_;
-    InetAddress *serv_addr_;
     Channel *acceptor_channel_;
     std::function<void(Socket *)> new_connection_call_back_;
 };

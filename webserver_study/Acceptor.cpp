@@ -5,21 +5,22 @@
 #include "Socket.h"
 
 Acceptor::Acceptor(EventLoop *loop): loop_(loop) {
-    serv_sock_ = new Socket();                                
-    serv_addr_ = new InetAddress("127.0.0.1", 8889);
+    serv_sock_ = new Socket();
+    InetAddress *serv_addr_ = new InetAddress("127.0.0.1", 8889);
     serv_sock_->Bind(serv_addr_);
     serv_sock_->Listen();
-    serv_sock_->SetNonBlock();
+    // serv_sock_->SetNonBlock();
 
     acceptor_channel_ = new Channel(serv_sock_->GetFd(), loop_);
     std::function<void()> call_back = std::bind(&Acceptor::HandleNewConnection, this);
-    acceptor_channel_->SetCallBack(std::move(call_back));
+    acceptor_channel_->SetReadCallBack(std::move(call_back));
     acceptor_channel_->EnableRead();
+    acceptor_channel_->SetUseThreadPool(false);
+    delete serv_addr_;
 }
 
 Acceptor::~Acceptor() {
     delete serv_sock_;
-    delete serv_addr_;
     delete acceptor_channel_;
 }
 

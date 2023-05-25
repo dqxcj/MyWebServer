@@ -1,16 +1,14 @@
 #include "Epoll.h"
 #include "Channel.h"
 #include "EventLoop.h"
-#include "../src/include/MyThreadPool/ThreadPool.h"
+#include "ThreadPool.h"
 
-EventLoop::EventLoop(): ep_(new Epoll()), thread_pool_(new ThreadPool(2, 4)), stop_(true) {
-    thread_pool_->SetStart();
-}
+EventLoop::EventLoop(): ep_(new Epoll()), thread_pool_(new ThreadPool(4)), stop_(true) {}
 
 EventLoop::~EventLoop() {
     delete ep_;
-    thread_pool_->Close();
     delete thread_pool_;
+    stop_ = true;
 }
 
 void EventLoop::Loop() {
