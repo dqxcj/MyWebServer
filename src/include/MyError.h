@@ -1,13 +1,13 @@
-#ifndef MYERROR_H
-#define MYERROR_H
+#ifndef SRC_INCLUDE_MYERROR_H_
+#define SRC_INCLUDE_MYERROR_H_
 #include <stdio.h>
 #include <stdlib.h>
 
 inline void ErrIf(bool condition, const char *errmsg) {
-    if(condition) {
-        perror(errmsg);
-        exit(EXIT_FAILURE);
-    }
+  if (condition) {
+    perror(errmsg);
+    exit(EXIT_FAILURE);
+  }
 }
 
-#endif
+#endif  // SRC_INCLUDE_MYERROR_H_

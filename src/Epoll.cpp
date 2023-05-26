@@ -1,16 +1,14 @@
 #include "Epoll.h"
 
-Epoll::Epoll():  
-    max_events_num_(MAX_EVENTS_NUM),
-    events_(max_events_num_) {
-    // 新建epoll
-    epfd_ = epoll_create1(0);
-    ErrIf(epfd_ == -1, "server error: epoll_create1()");
-    
-    // 初始化为0
-    for(auto &ev : events_) {
-        memset(&ev, 0, sizeof(ev));
-    }
+Epoll::Epoll() : max_events_num_(MAX_EVENTS_NUM), events_(max_events_num_) {
+  // 新建epoll
+  epfd_ = epoll_create1(0);
+  ErrIf(epfd_ == -1, "server error: epoll_create1()");
+
+  // 初始化为0
+  for (auto &ev : events_) {
+    memset(&ev, 0, sizeof(ev));
+  }
 }
 
 /**
@@ -19,17 +17,15 @@ Epoll::Epoll():
  * @param {int} max_events_num 最多监听事件数
  * @return {*}
  */
-Epoll::Epoll(int flags, int max_events_num): 
-    max_events_num_(max_events_num),
-    events_(max_events_num_) {
-    // 新建epoll
-    epfd_ = epoll_create1(flags);
-    ErrIf(epfd_ == -1, "server error: epoll_create1()");
+Epoll::Epoll(int flags, int max_events_num) : max_events_num_(max_events_num), events_(max_events_num_) {
+  // 新建epoll
+  epfd_ = epoll_create1(flags);
+  ErrIf(epfd_ == -1, "server error: epoll_create1()");
 
-    // 初始化为0
-    for(auto &ev : events_) {
-        memset(&ev, 0, sizeof(ev));
-    }
+  // 初始化为0
+  for (auto &ev : events_) {
+    memset(&ev, 0, sizeof(ev));
+  }
 }
 
 /**
@@ -40,14 +36,14 @@ Epoll::Epoll(int flags, int max_events_num):
  * @return {void}
  */
 void Epoll::AddFd(int fd, uint32_t events_flag, bool is_no_block) {
-    epoll_event ev;
-    memset(&ev, 0, sizeof(ev));
-    ev.data.fd = fd;
-    ev.events = events_flag;                                      // 模式
-    if(is_no_block) {
-        fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK); // 设置成非阻塞
-    }
-    ErrIf(epoll_ctl(epfd_, EPOLL_CTL_ADD, fd, &ev) == -1, "server error: epoll_ctl()");
+  epoll_event ev;
+  memset(&ev, 0, sizeof(ev));
+  ev.data.fd = fd;
+  ev.events = events_flag;  // 模式
+  if (is_no_block) {
+    fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);  // 设置成非阻塞
+  }
+  ErrIf(epoll_ctl(epfd_, EPOLL_CTL_ADD, fd, &ev) == -1, "server error: epoll_ctl()");
 }
 
 /**
@@ -68,16 +64,16 @@ void Epoll::AddFd(int fd, uint32_t events_flag, bool is_no_block) {
  * @return {std::vector<Channel *>}
  */
 std::vector<Channel *> Epoll::Wait(int timeout) {
-    int ev_num = epoll_wait(epfd_, events_.data(), max_events_num_, timeout);
-    ErrIf(ev_num == -1, "server error: epoll_wait()");
+  int ev_num = epoll_wait(epfd_, events_.data(), max_events_num_, timeout);
+  ErrIf(ev_num == -1, "server error: epoll_wait()");
 
-    std::vector<Channel *> res;
-    for(int i = 0; i < ev_num; i++) {
-        Channel *channel = (Channel *)events_[i].data.ptr;
-        channel->SetTheMomentEvents(events_[i].events);
-        res.push_back(channel);
-    }
-    return res;
+  std::vector<Channel *> res;
+  for (int i = 0; i < ev_num; i++) {
+    Channel *channel = (Channel *)events_[i].data.ptr;
+    channel->SetTheMomentEvents(events_[i].events);
+    res.push_back(channel);
+  }
+  return res;
 }
 
 /**
@@ -86,16 +82,15 @@ std::vector<Channel *> Epoll::Wait(int timeout) {
  * @return {void}
  */
 void Epoll::UpdateChannel(Channel *channel) {
-    int fd = channel->GetFd();
-    epoll_event ev;
-    memset(&ev, 0, sizeof(ev));
-    ev.data.ptr = channel;
-    ev.events = channel->GetEvents();   // 获取当前的events，一般已被修改，与原先的不同。借此来修改监听的事件
-    if(!channel->GetIsInEpoll()) {      // 新增
-        ErrIf(epoll_ctl(epfd_, EPOLL_CTL_ADD, fd, &ev) == -1, "server error: UpdateChannel()->epoll_ctl()");
-        channel->SetIsInEpoll(true);
-    } else {                            // 修改
-        ErrIf(epoll_ctl(epfd_, EPOLL_CTL_MOD, fd, &ev) == -1, "server error: UpdateChannel()->epoll_ctl()");
-    }
+  int fd = channel->GetFd();
+  epoll_event ev;
+  memset(&ev, 0, sizeof(ev));
+  ev.data.ptr = channel;
+  ev.events = channel->GetEvents();  // 获取当前的events，一般已被修改，与原先的不同。借此来修改监听的事件
+  if (!channel->GetIsInEpoll()) {  // 新增
+    ErrIf(epoll_ctl(epfd_, EPOLL_CTL_ADD, fd, &ev) == -1, "server error: UpdateChannel()->epoll_ctl()");
+    channel->SetIsInEpoll(true);
+  } else {  // 修改
+    ErrIf(epoll_ctl(epfd_, EPOLL_CTL_MOD, fd, &ev) == -1, "server error: UpdateChannel()->epoll_ctl()");
+  }
 }
-

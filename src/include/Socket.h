@@ -1,31 +1,32 @@
-#ifndef SOCKET_H
-#define SOCKET_H
-#include "MyError.h"
+#ifndef SRC_INCLUDE_SOCKET_H_
+#define SRC_INCLUDE_SOCKET_H_
 #include "InetAddress.h"
+#include "MyError.h"
 
-#include <sys/socket.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
+#include <sys/socket.h>
 
 class Socket {
-public:
-    Socket();
+ public:
+  Socket() = default;
 
-    Socket(int fd);
+  explicit Socket(int fd);
 
-    void Bind(InetAddress *addr);
+  void Bind(InetAddress *addr);
 
-    void Listen();
+  void Listen();
 
-    int Accept(InetAddress *clnt_addr);
+  int Accept(InetAddress *clnt_addr);
 
-    int GetFd();
+  int GetFd();
 
-    void SetNonBlock();
+  void SetNonBlock();
 
-    void Connect(InetAddress *serv_addr);
-private:
-    int fd_; // 该socket的文件描述符
+  void Connect(InetAddress *serv_addr);
+
+ private:
+  int fd_;  // 该socket的文件描述符
 };
 
-#endif
+#endif  // SRC_INCLUDE_SOCKET_H_

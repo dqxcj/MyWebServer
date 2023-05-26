@@ -3,5 +3,6 @@
         "cstdio": "cpp"
     },
     "C_Cpp.autocomplete": "disabled",
-    "C_Cpp.intelliSenseEngine": "disabled"
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "clangd.path": "clangd"
 }
