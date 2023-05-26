@@ -1,3 +1,9 @@
 *.vscode
 *bin
 *code4
+*30dayMakeCppServer
+*
+!src
+!webserver_study/*.cpp
+!webserver_study/*.h
+!webserver_study/Makefile
