@@ -4,6 +4,13 @@
 *30dayMakeCppServer
 *
 !src
+!test
+!src/include
 !webserver_study/*.cpp
 !webserver_study/*.h
 !webserver_study/Makefile
+!CMakeLists.txt
+!*.cpp
+!*.h
+!.gitignore
+!*.md
