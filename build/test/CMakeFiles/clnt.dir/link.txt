@@ -1,0 +1,1 @@
+/usr/bin/clang++-14   -O2 -g -g  -rdynamic CMakeFiles/clnt.dir/client.cpp.o  -o ../../bin/clnt  -lpthread ../../lib/libserver.a -lpthread 
