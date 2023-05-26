@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "cstdio": "cpp"
+    },
+    "C_Cpp.autocomplete": "disabled",
+    "C_Cpp.intelliSenseEngine": "disabled"
+}
