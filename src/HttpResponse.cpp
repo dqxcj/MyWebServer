@@ -54,7 +54,7 @@ HttpResponse::~HttpResponse() {
 
 // 初始化响应
 void HttpResponse::Init(const std::string &src_dir, std::string &path, bool isKeepAlive, int code) {
-  std::cout << "response init****************************************" << std::endl;
+  std::cout << "response init****************************************" << path << std::endl;
   assert(!src_dir.empty());
   if (mm_file_) {
     UnmapFile();
@@ -71,15 +71,21 @@ void HttpResponse::Init(const std::string &src_dir, std::string &path, bool isKe
 void HttpResponse::MakeResponse(Buffer *buff) {
     // 获取文件内容并做出相应措施
     if (stat((src_dir_ + path_).data(), &mm_file_stat_) < 0 || S_ISDIR(mm_file_stat_.st_mode)) {
+        fprintf(stderr, "stat error: %s\n", strerror(errno));
+        std::cout << "test" << src_dir_ + path_ << (stat((src_dir_ + path_).data(), &mm_file_stat_) < 0) << std::endl;
         code_ = 404;
     } else if (!(mm_file_stat_.st_mode & S_IROTH)) {    // 不可被其他用户读
         code_ = 403;
     } else if (code_ == -1) {
         code_ = 200;
     }
+    std::cout << "HttpResponse::MakeResponse1 " << path_ << std::endl;
     ErrorHtml_();
+    std::cout << "HttpResponse::MakeResponse2 " << path_ << std::endl;
     AddStateLine_(buff);
+    std::cout << "HttpResponse::MakeResponse3 " << path_ << std::endl;
     AddHeader_(buff);
+    std::cout << "HttpResponse::MakeResponse4 " << path_ << std::endl;
     AddContent_(buff);
 }
 
@@ -119,6 +125,7 @@ void HttpResponse::AddHeader_(Buffer *buff) {
 // 设置响应正文
 void HttpResponse::AddContent_(Buffer *buff) {
     int src_fd = open((src_dir_ + path_).data(), O_RDONLY);
+    std::cout << src_dir_ + path_ << " fd: " << src_fd << std::endl; 
     if (src_fd < 0) {
         ErrorContent(buff, "src_fd < 0 File NotFound!");
         return;

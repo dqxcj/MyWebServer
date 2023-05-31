@@ -15,7 +15,7 @@ HttpConn::HttpConn()
       write_buffer_(new Buffer(1024)),
       request_(new HttpRequest()),
       response_(new HttpResponse()),
-      src_dir_("/home/ljy/MyWebServer") {}
+      src_dir_("/home/admin/MyWebServer") {}
 
 HttpConn::~HttpConn() {
     Close();
@@ -67,6 +67,7 @@ ssize_t HttpConn::write() {
     do {
         // 分散写
         len = writev(fd_, iov_, iov_cnt_);
+         writev(1, iov_, iov_cnt_);
         if (len <= 0) {
             break;
         }

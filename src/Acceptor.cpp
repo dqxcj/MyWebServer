@@ -9,7 +9,7 @@
 
 Acceptor::Acceptor(EventLoop *loop) : loop_(loop) {
   serv_sock_ = new Socket();
-  InetAddress *serv_addr_ = new InetAddress("172.25.56.250", 6666);
+  InetAddress *serv_addr_ = new InetAddress("172.25.56.250", 80);
   serv_sock_->Bind(serv_addr_);
   serv_sock_->Listen();
   // serv_sock_->SetNonBlock();

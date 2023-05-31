@@ -72,6 +72,7 @@ bool HttpRequest::parse(Buffer *buff) {
         const char* lineEnd = std::search(buff->Peek(), buff->BeginWriteConst(), CRLF, CRLF + 2);
         // 构造一行数据并处理
         std::string line(buff->Peek(), lineEnd);
+	std::cout << line << std::endl;
         switch(state_) 
         {
         case REQUEST_LINE:  // 解析请求首行
