@@ -17,7 +17,7 @@ int main() {
   while (true) {
     char buf[1024];
     bzero(buf, sizeof(buf));
-    cin >> buf;
+    std::cin >> buf;
     ssize_t write_len = write(sockfd, buf, sizeof(buf));
     ErrIf(write_len == -1, "client error: write to server");
     std::cout << "client send " << write_len << " bytes to server " << inet_ntoa(serv_addr.sin_addr) << std::endl;

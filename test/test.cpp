@@ -60,13 +60,13 @@ int main(int argc, char *argv[]) {
   while ((o = getopt(argc, argv, optstring)) != -1) {
     switch (o) {
       case 't':
-        threads = stoi(optarg);
+        threads = atoi(optarg);
         break;
       case 'm':
-        msgs = stoi(optarg);
+        msgs = atoi(optarg);
         break;
       case 'w':
-        wait = stoi(optarg);
+        wait = atoi(optarg);
         break;
       case '?':
         printf("error optopt: %c\n", optopt);

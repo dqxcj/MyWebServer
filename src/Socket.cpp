@@ -1,5 +1,9 @@
 #include "Socket.h"
+#include "InetAddress.h"
+#include "MyError.h"
+
 #include <iostream>
+#include <memory>
 
 Socket::Socket() {
   fd_ = socket(AF_INET, SOCK_STREAM, 0);
@@ -14,11 +18,12 @@ void Socket::Bind(InetAddress *addr) {
 
 void Socket::Listen() { ErrIf(listen(fd_, SOMAXCONN) == -1, "server error: listen()"); }
 
-int Socket::Accept(InetAddress *clnt_addr) {
+int Socket::Accept(std::shared_ptr<InetAddress> clnt_addr) {
   int clnt_sockfd = accept(fd_, (sockaddr *)&(clnt_addr->addr_), &(clnt_addr->addr_len_));
   ErrIf(clnt_sockfd == -1, "server error: accept()");
   std::cout << "new client fd " << clnt_sockfd << "! Ip: " << inet_ntoa(clnt_addr->addr_.sin_addr)
             << " Port: " << ntohs(clnt_addr->addr_.sin_port) << std::endl;
+  clnt_addr_ = clnt_addr;
   return clnt_sockfd;
 }
 
@@ -30,4 +35,8 @@ void Socket::SetNonBlock() {
 
 void Socket::Connect(InetAddress *serv_addr) {
   ErrIf(connect(fd_, (sockaddr *)&serv_addr->addr_, serv_addr->addr_len_) == -1, "client error: accept()");
+}
+
+std::shared_ptr<InetAddress> Socket::GetClntAddr() {
+  return clnt_addr_;
 }

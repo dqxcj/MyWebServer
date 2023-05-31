@@ -1,4 +1,5 @@
 #include "Acceptor.h"
+#include <memory>
 #include "Channel.h"
 #include "EventLoop.h"
 #include "InetAddress.h"
@@ -7,7 +8,7 @@
 
 Acceptor::Acceptor(EventLoop *loop) : loop_(loop) {
   serv_sock_ = new Socket();
-  InetAddress *serv_addr_ = new InetAddress("127.0.0.1", 8889);
+  InetAddress *serv_addr_ = new InetAddress("127.0.0.1", 6666);
   serv_sock_->Bind(serv_addr_);
   serv_sock_->Listen();
   // serv_sock_->SetNonBlock();
@@ -26,10 +27,9 @@ Acceptor::~Acceptor() {
 }
 
 void Acceptor::HandleNewConnection() {
-  InetAddress *clnt_addr = new InetAddress();
+  auto clnt_addr = std::make_shared<InetAddress>();
   Socket *clnt_sock = new Socket(serv_sock_->Accept(clnt_addr));
   new_connection_call_back_(clnt_sock);
-  delete clnt_addr;
   delete clnt_sock;
 }
 
