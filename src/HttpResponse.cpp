@@ -120,14 +120,14 @@ void HttpResponse::AddHeader_(Buffer *buff) {
 void HttpResponse::AddContent_(Buffer *buff) {
     int src_fd = open((src_dir_ + path_).data(), O_RDONLY);
     if (src_fd < 0) {
-        ErrorContent(buff, "File NotFound!");
+        ErrorContent(buff, "src_fd < 0 File NotFound!");
         return;
     }
     printf("file path: %s", (src_dir_ + path_).data());
     // 内存映射，获取文件内容
     int* mm_ret = (int*)mmap(0, mm_file_stat_.st_size, PROT_READ, MAP_PRIVATE, src_fd, 0);
     if (*mm_ret == -1) {
-        ErrorContent(buff, "File NotFound!");
+        ErrorContent(buff, "mm_ret == -1 File NotFound!");
         return;
     }
     mm_file_ = (char*)mm_ret;
@@ -148,7 +148,7 @@ void HttpResponse::ErrorContent(Buffer *buff, const std::string &message) {
     }
     body += std::to_string(code_) + " : " + status  + "\n";
     body += "<p>" + message + "</p>";
-    body += "<hr><em>TinyWebServer</em></body></html>";
+    body += "<hr><em>MyWebServer</em></body></html>";
 
     buff->Append("Content-length: " + std::to_string(body.size()) + "\r\n\r\n");
     buff->Append(body);

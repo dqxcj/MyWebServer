@@ -12,7 +12,7 @@ int main() {
   struct sockaddr_in serv_addr;
   bzero(&serv_addr, sizeof(serv_addr));
   serv_addr.sin_family = AF_INET;
-  serv_addr.sin_port = htons(6666);
+  serv_addr.sin_port = htons(6667);
   serv_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
   ErrIf(connect(sockfd, (sockaddr *)&serv_addr, sizeof(serv_addr)) == -1, "client error: accept()");
 
