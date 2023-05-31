@@ -45,6 +45,7 @@ HttpResponse::HttpResponse() {
     isKeepAlive_ = false;
     mm_file_ = nullptr;
     mm_file_stat_ = { 0 };
+    std::cout << "response construct" << std::endl;
 }
 
 HttpResponse::~HttpResponse() {
@@ -52,16 +53,19 @@ HttpResponse::~HttpResponse() {
 }
 
 // 初始化响应
-void HttpResponse::Init(const std::string& src_dir, std::string& path, bool isKeepAlive, int code) {
-    assert(!src_dir.empty());
-    if (mm_file_) { UnmapFile(); }
-    
-    code_ = code;
-    isKeepAlive_ = isKeepAlive;
-    path_ = path;
-    src_dir_ = src_dir;
-    mm_file_ = nullptr;
-    mm_file_stat_ = { 0 };
+void HttpResponse::Init(const std::string &src_dir, std::string &path, bool isKeepAlive, int code) {
+  std::cout << "response init****************************************" << std::endl;
+  assert(!src_dir.empty());
+  if (mm_file_) {
+    UnmapFile();
+  }
+
+  code_ = code;
+  isKeepAlive_ = isKeepAlive;
+  path_ = path;
+  src_dir_ = src_dir;
+  mm_file_ = nullptr;
+  mm_file_stat_ = {0};
 }
 
 void HttpResponse::MakeResponse(Buffer *buff) {

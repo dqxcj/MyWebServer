@@ -17,7 +17,7 @@ class Socket {
 
   void Listen();
 
-  int Accept(std::shared_ptr<InetAddress> clnt_addr);
+  int Accept(InetAddress *clnt_addr);
 
   int GetFd();
 
@@ -25,11 +25,8 @@ class Socket {
 
   void Connect(InetAddress *serv_addr);
 
-  std::shared_ptr<InetAddress> GetClntAddr();
-
  private:
   int fd_;  // 该socket的文件描述符
-  std::shared_ptr<InetAddress> clnt_addr_{nullptr};
 };
 
 #endif  // SRC_INCLUDE_SOCKET_H_

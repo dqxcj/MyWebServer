@@ -2,25 +2,33 @@
 #include "HttpRequest.h"
 #include "HttpResponse.h"
 #include "buffer.h"
+#include "unistd.h"
 
-const char* HttpConn::srcDir;
 std::atomic<int> HttpConn::userCount;
 
 bool HttpConn::isET = false;
 
-HttpConn::HttpConn(): 
-    fd_(-1), addr_({0}), is_close_(true)
-    {}
+HttpConn::HttpConn()
+    : fd_(-1),
+      is_close_(true),
+      read_buffer_(new Buffer(1024)),
+      write_buffer_(new Buffer(1024)),
+      request_(new HttpRequest()),
+      response_(new HttpResponse()),
+      src_dir_("/home/ljy/MyWebServer") {}
 
 HttpConn::~HttpConn() {
     Close();
+    delete read_buffer_;
+    delete write_buffer_;
+    delete request_;
+    delete response_;
 }
 
 // 初始化
-void HttpConn::init(int fd, const sockaddr_in& addr) {
+void HttpConn::init(int fd) {
     assert(fd > 0);
     fd_ = fd;
-    addr_ = addr;
     userCount++;
     is_close_ = false;
 }
@@ -37,21 +45,6 @@ void HttpConn::Close() {
 // 返回该连接的fd_
 int HttpConn::GetFd() const {
     return fd_;
-}
-
-// 返回该连接的端口
-int HttpConn::GetPort() const {
-    return addr_.sin_port;
-}
-
-// 返回该连接的ip地址
-const char* HttpConn::GetIp() const {
-    return inet_ntoa(addr_.sin_addr);
-}
-
-// 返回该连接的地址
-sockaddr_in HttpConn::GetAddr() const {
-    return addr_;
 }
 
 // 读数据到读缓冲区
@@ -105,14 +98,16 @@ bool HttpConn::process() {
     if (read_buffer_->ReadableBytes() <= 0) {
         return false;
     }
+    std::cout << "ccc" << std::endl;
     if (request_->parse(read_buffer_)) {
-        printf("%s\n", request_->path().c_str());
-        response_->Init(srcDir, request_->path(), request_->IsKeepAlive(), 200);
+        std::cout << request_->path() << std::endl;
+        response_->Init(src_dir_, request_->path(), request_->IsKeepAlive(), 200);
     } else {  // parse failed
-        response_->Init(srcDir, request_->path(), false, 400);
+        response_->Init(src_dir_, request_->path(), false, 400);
     }
+    std::cout << "bbb" << std::endl;
     response_->MakeResponse(write_buffer_);
-
+    std::cout << "aaa" << std::endl;
     iov_[0].iov_base = const_cast<char*>(write_buffer_->Peek());
     iov_[0].iov_len = write_buffer_->ReadableBytes();
     iov_cnt_ = 1;

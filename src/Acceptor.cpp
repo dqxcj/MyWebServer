@@ -5,6 +5,7 @@
 #include "InetAddress.h"
 #include "Socket.h"
 #include "include/Acceptor.h"
+#include <iostream>
 
 Acceptor::Acceptor(EventLoop *loop) : loop_(loop) {
   serv_sock_ = new Socket();
@@ -27,10 +28,10 @@ Acceptor::~Acceptor() {
 }
 
 void Acceptor::HandleNewConnection() {
-  auto clnt_addr = std::make_shared<InetAddress>();
+  InetAddress *clnt_addr = new InetAddress();
   Socket *clnt_sock = new Socket(serv_sock_->Accept(clnt_addr));
+  std::cout << "clnt_fd: " << clnt_sock->GetFd() << std::endl;
   new_connection_call_back_(clnt_sock);
-  delete clnt_sock;
 }
 
 void Acceptor::SetNewConnectionCallBack(std::function<void(Socket *)> &&new_connection_call_back) {

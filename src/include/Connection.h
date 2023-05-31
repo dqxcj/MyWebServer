@@ -25,7 +25,7 @@ class Connection {
   void SetDeleteConnectionCallBack(std::function<void(Socket *)> delete_connection_call_back);
   
   // http业务逻辑
-  void HttpServer();
+  void HttpServer(Socket *clnt);
 
  private:
   EventLoop *loop_;

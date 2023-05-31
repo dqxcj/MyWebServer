@@ -23,7 +23,7 @@ bool HttpRequest::ParseRequestLine_(const std::string& line) {
         state_ = HEADERS;
         return true;
     }
-    printf("RequestLine Error\n");
+    printf("RequestLine Error: %s\n", line.c_str());
     return false;
 }
 
@@ -101,7 +101,10 @@ bool HttpRequest::parse(Buffer *buff) {
 
 std::string HttpRequest::path() const { return path_; }
 
-std::string& HttpRequest::path() { return path_; }
+std::string& HttpRequest::path() {
+  std::cout << "HttpRequest::path()" << std::endl;
+  return path_; 
+}
 
 std::string HttpRequest::method() const { return method_; }
 
@@ -128,5 +131,6 @@ bool HttpRequest::IsKeepAlive() const {
         // 注意1.1以上版本才支持长连接
         return header_.find("Connection")->second == "keep-alive" && version_ == "1.1";
     }
+    std::cout << "HttpRequest::IsKeepAlive()" << std::endl;
     return false;
 }

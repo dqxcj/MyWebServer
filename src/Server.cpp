@@ -14,6 +14,7 @@ Server::Server(EventLoop *loop) : main_reactor_(loop) {
 
   // 获取最大线程数，一般指处理器数量
   int cnt = std::thread::hardware_concurrency();
+  std::cout << "thread num: " << cnt << std::endl;
 
   // 生成sub_reactors_
   for (int i = 0; i < cnt; i++) {
