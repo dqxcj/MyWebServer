@@ -1,9 +1,9 @@
 # 设置编译器
 # 设置 C 编译器路径
-set(CMAKE_C_COMPILER "/usr/bin/clang-10")
+set(CMAKE_C_COMPILER "/usr/bin/clang-14")
 
 # 设置 C++ 编译器路径
-set(CMAKE_CXX_COMPILER "/usr/bin/clang++-10")
+set(CMAKE_CXX_COMPILER "/usr/bin/clang++-14")
 
 # 设置编译选项
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")  # 设置 C 编译器的优化级别为 O2

@@ -4,5 +4,5 @@
     },
     "C_Cpp.autocomplete": "disabled",
     "C_Cpp.intelliSenseEngine": "disabled",
-    "clangd.path": "clangd"
+    "clangd.path": "clangd-14"
 }

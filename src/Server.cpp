@@ -5,6 +5,7 @@
 #include "EventLoop.h"
 #include "Socket.h"
 #include "ThreadPool.h"
+#include "log.h"
 
 Server::Server(EventLoop *loop) : main_reactor_(loop) {
   // 将main_reactor绑定到acceptor_上，专门处理tcp连接
