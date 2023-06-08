@@ -9,7 +9,7 @@
 
 Acceptor::Acceptor(EventLoop *loop) : loop_(loop) {
   serv_sock_ = new Socket();
-  InetAddress *serv_addr_ = new InetAddress("172.25.56.250", 80);
+  InetAddress *serv_addr_ = new InetAddress("127.0.0.1", 80);
   serv_sock_->Bind(serv_addr_);
   serv_sock_->Listen();
   // serv_sock_->SetNonBlock();
@@ -23,7 +23,7 @@ Acceptor::Acceptor(EventLoop *loop) : loop_(loop) {
 }
 
 Acceptor::~Acceptor() {
-  delete serv_sock_;
+  // delete serv_sock_;
   delete acceptor_channel_;
 }
 
@@ -36,4 +36,8 @@ void Acceptor::HandleNewConnection() {
 
 void Acceptor::SetNewConnectionCallBack(std::function<void(Socket *)> &&new_connection_call_back) {
   new_connection_call_back_ = new_connection_call_back;
+}
+
+Socket *Acceptor::GetServSocket() {
+  return serv_sock_;
 }

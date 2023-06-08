@@ -1,5 +1,6 @@
 #include "HttpResponse.h"
 #include "buffer.h"
+#include "log.h"
 
 // 文件后缀 对应的 MIME-TYPE类型，用在响应头Content-Type中
 const std::unordered_map<std::string, std::string> HttpResponse::SUFFIX_TYPE = {
@@ -54,7 +55,7 @@ HttpResponse::~HttpResponse() {
 
 // 初始化响应
 void HttpResponse::Init(const std::string &src_dir, std::string &path, bool isKeepAlive, int code) {
-  std::cout << "response init****************************************" << path << std::endl;
+  LOG_INFO("response init**************************************** %s", path.c_str());
   assert(!src_dir.empty());
   if (mm_file_) {
     UnmapFile();
@@ -71,8 +72,8 @@ void HttpResponse::Init(const std::string &src_dir, std::string &path, bool isKe
 void HttpResponse::MakeResponse(Buffer *buff) {
     // 获取文件内容并做出相应措施
     if (stat((src_dir_ + path_).data(), &mm_file_stat_) < 0 || S_ISDIR(mm_file_stat_.st_mode)) {
-        fprintf(stderr, "stat error: %s\n", strerror(errno));
-        std::cout << "test" << src_dir_ + path_ << (stat((src_dir_ + path_).data(), &mm_file_stat_) < 0) << std::endl;
+        LOG_ERROR("stat error: %s\n", strerror(errno));
+        LOG_INFO("404 %s %d", (src_dir_ + path_).c_str(), (stat((src_dir_ + path_).data(), &mm_file_stat_) < 0));
         code_ = 404;
     } else if (!(mm_file_stat_.st_mode & S_IROTH)) {    // 不可被其他用户读
         code_ = 403;

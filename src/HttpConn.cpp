@@ -3,6 +3,7 @@
 #include "HttpResponse.h"
 #include "buffer.h"
 #include "unistd.h"
+#include "log.h"
 
 std::atomic<int> HttpConn::userCount;
 
@@ -15,7 +16,7 @@ HttpConn::HttpConn()
       write_buffer_(new Buffer(1024)),
       request_(new HttpRequest()),
       response_(new HttpResponse()),
-      src_dir_("/home/admin/MyWebServer") {}
+      src_dir_("/home/ljy/MyWebServer") {}
 
 HttpConn::~HttpConn() {
     Close();
@@ -117,7 +118,7 @@ bool HttpConn::process() {
         iov_[1].iov_len = response_->FileLen();
         iov_cnt_ = 2;
     }
-    printf("filesize: %ld %d, to %d\n", response_->FileLen(), iov_cnt_, ToWriteBytes());
+    LOG_INFO("filesize: %ld %d, to %d\n", response_->FileLen(), iov_cnt_, ToWriteBytes());
     return true;
 }
 

@@ -1,4 +1,5 @@
 #include "log.h"
+#include <cstdio>
 #include "blockqueue.h"
 #include "buffer.h"
 
@@ -9,6 +10,7 @@ Log::Log() {
     deque_ = nullptr;
     toDay_ = 0;
     fp_ = nullptr;
+    buff_ = new Buffer();
 }
 
 // 获取当前的日志层级
@@ -25,6 +27,7 @@ void Log::SetLevel(int level) {
 
 // 初始化阻塞队列、异步线程、日志文件
 void Log::init(int level, const char* path, const char* suffix, int maxQueueSize) {
+    std::cout << "log::init" << std::endl;
     isOpen_ = true;
     level_ = level;
     if (maxQueueSize > 0) {
@@ -57,22 +60,25 @@ void Log::init(int level, const char* path, const char* suffix, int maxQueueSize
     // 创建日志文件
     {
         std::lock_guard<std::mutex> locker(mtx_);
-        buff_.RetrieveAll();
+        buff_->RetrieveAll();
         if (fp_) {
             flush();
             fclose(fp_);
         }
+        std::cout << "filename: " << fileName << std::endl;
         fp_ = fopen(fileName, "a");
         if (fp_ == nullptr) {
             mkdir(path_, 0777);
             fp_ = fopen(fileName, "a");
         }
+        std::cout << fp_ << std::endl;
         assert(fp_ != nullptr);
     }
 }
 
 // 将日志信息写入阻塞队列
 void Log::write(int level, const char *format, ...) {
+    std::cout << "Log::write" << std::endl;
     struct timeval now = {0, 0};
     gettimeofday(&now, nullptr);
     time_t tSec = now.tv_sec;
@@ -109,26 +115,28 @@ void Log::write(int level, const char *format, ...) {
         std::unique_lock<std::mutex> locker(mtx_);
         lineCount_++;
         // 每条日志的写入时间
-        int n = snprintf(buff_.BeginWrite(), 128, "%d-%02d-%02d %02d:%02d:%02d.%06ld ",
+        int n = snprintf(buff_->BeginWrite(), 128, "%d-%02d-%02d %02d:%02d:%02d.%06ld ",
                     t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
                     t.tm_hour, t.tm_min, t.tm_sec, now.tv_usec);
-        buff_.HasWritten(n);
+        buff_->HasWritten(n);
         // 每条日志的类型
         AppendLogLevelTitle_(level);
         // 日志的具体内容
         va_start(vaList, format);
-        int m = vsnprintf(buff_.BeginWrite(), buff_.WritableBytes(), format, vaList);
+        int m = vsnprintf(buff_->BeginWrite(), buff_->WritableBytes(), format, vaList);
         va_end(vaList);
-        buff_.HasWritten(m);
-        buff_.Append("\n\0", 2);
+        buff_->HasWritten(m);
+        buff_->Append("\n\0", 2);
         // 将日志添加到阻塞队列或直接写入文件
         if (isAsync_ && deque_ && !deque_->full()) {
-            deque_->push_back(buff_.RetrieveAllToStr());
+          std::string str = buff_->RetrieveAllToStr();
+          deque_->push_back(str);
+          std::cout << deque_->size() << " " << str << std::endl;
         } else {    // 直接写意味着这一步不是异步的，而且这一条日志可能会和其他日志时间顺序错乱
-            fputs(buff_.Peek(), fp_);
+            fputs(buff_->Peek(), fp_);
         }
         // 清空buff
-        buff_.RetrieveAll();
+        buff_->RetrieveAll();
     }
 }
 
@@ -136,19 +144,19 @@ void Log::write(int level, const char *format, ...) {
 void Log::AppendLogLevelTitle_(int level) {
     switch(level) {
     case 0:
-        buff_.Append("[debug]: ", 9);
+        buff_->Append("[debug]: ", 9);
         break;
     case 1:
-        buff_.Append("[info] : ", 9);
+        buff_->Append("[info] : ", 9);
         break;
     case 2:
-        buff_.Append("[warn] : ", 9);
+        buff_->Append("[warn] : ", 9);
         break;
     case 3:
-        buff_.Append("[error]: ", 9);
+        buff_->Append("[error]: ", 9);
         break;
     default:
-        buff_.Append("[info] : ", 9);
+        buff_->Append("[info] : ", 9);
         break;
     }
 }
@@ -164,7 +172,7 @@ void Log::flush() {
 }
 
 Log::~Log() {
-
+    delete buff_;
 }
 
 // 单例模式
@@ -178,6 +186,7 @@ Log* Log::Instance() {
 void Log::AsyncWrite_() {
   std::string str = "";
   while (deque_->pop(str)) {
+    std::cout << "write to file: " << str << std::endl;
     std::lock_guard<std::mutex> locker(mtx_);
     fputs(str.c_str(), fp_);  // fp_ 为 FILE* 类型
   }

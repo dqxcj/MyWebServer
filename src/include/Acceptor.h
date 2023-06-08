@@ -15,7 +15,8 @@ class Acceptor {
 
   void HandleNewConnection();
   void SetNewConnectionCallBack(std::function<void(Socket *)> &&new_connection_call_back);
-
+  
+  Socket *GetServSocket();
  private:
   EventLoop *loop_;
   Socket *serv_sock_;

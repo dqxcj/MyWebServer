@@ -9,8 +9,8 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <sys/stat.h>
+#include "blockqueue.h"
 
-class BlockDeque;
 class Buffer;
 
 class Log {
@@ -49,7 +49,7 @@ private:
 
     bool isOpen_;    
 
-    Buffer buff_;   // 缓存
+    Buffer *buff_;   // 缓存
     int level_;     // 日志层级
     bool isAsync_;  // 是否异步
 

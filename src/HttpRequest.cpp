@@ -1,5 +1,6 @@
 #include "HttpRequest.h"
 #include "buffer.h"
+#include "log.h"
 
 const std::unordered_set<std::string> HttpRequest::DEFAULT_HTML{
             "/index", "/register", "/login",
@@ -72,7 +73,7 @@ bool HttpRequest::parse(Buffer *buff) {
         const char* lineEnd = std::search(buff->Peek(), buff->BeginWriteConst(), CRLF, CRLF + 2);
         // 构造一行数据并处理
         std::string line(buff->Peek(), lineEnd);
-	std::cout << line << std::endl;
+        LOG_INFO("%s", line.c_str());
         switch(state_) 
         {
         case REQUEST_LINE:  // 解析请求首行
@@ -96,7 +97,7 @@ bool HttpRequest::parse(Buffer *buff) {
         if (lineEnd == buff->BeginWrite()) { break; }
         buff->RetrieveUntil(lineEnd + 2);
     }
-    printf("[%s], [%s], [%s]\n", method_.c_str(), path_.c_str(), version_.c_str());
+    LOG_INFO("[%s], [%s], [%s]\n", method_.c_str(), path_.c_str(), version_.c_str());
     return true;
 }
 

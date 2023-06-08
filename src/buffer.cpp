@@ -34,6 +34,12 @@ void Buffer::RetrieveAll() {
     read_pos_ = 0;
     write_pos_ = 0;
 }
+// 清空缓存区，并返回string
+std::string Buffer::RetrieveAllToStr() {
+  std::string str(Peek(), ReadableBytes());
+  RetrieveAll();
+  return str;
+}
 
 // 移动写指针到指定地址
 void Buffer::RetrieveUntil(const char* end) {
