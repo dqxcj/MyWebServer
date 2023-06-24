@@ -1,6 +1,6 @@
 #include "HttpResponse.h"
-#include "buffer.h"
-#include "log.h"
+#include "Buffer.h"
+#include "Log.h"
 
 // 文件后缀 对应的 MIME-TYPE类型，用在响应头Content-Type中
 const std::unordered_map<std::string, std::string> HttpResponse::SUFFIX_TYPE = {
@@ -46,7 +46,7 @@ HttpResponse::HttpResponse() {
     isKeepAlive_ = false;
     mm_file_ = nullptr;
     mm_file_stat_ = { 0 };
-    std::cout << "response construct" << std::endl;
+    // std::cout << "response construct" << std::endl;
 }
 
 HttpResponse::~HttpResponse() {
@@ -80,13 +80,13 @@ void HttpResponse::MakeResponse(Buffer *buff) {
     } else if (code_ == -1) {
         code_ = 200;
     }
-    std::cout << "HttpResponse::MakeResponse1 " << path_ << std::endl;
+    // std::cout << "HttpResponse::MakeResponse1 " << path_ << std::endl;
     ErrorHtml_();
-    std::cout << "HttpResponse::MakeResponse2 " << path_ << std::endl;
+    // std::cout << "HttpResponse::MakeResponse2 " << path_ << std::endl;
     AddStateLine_(buff);
-    std::cout << "HttpResponse::MakeResponse3 " << path_ << std::endl;
+    // std::cout << "HttpResponse::MakeResponse3 " << path_ << std::endl;
     AddHeader_(buff);
-    std::cout << "HttpResponse::MakeResponse4 " << path_ << std::endl;
+    // std::cout << "HttpResponse::MakeResponse4 " << path_ << std::endl;
     AddContent_(buff);
 }
 
@@ -108,7 +108,7 @@ void HttpResponse::AddStateLine_(Buffer *buff) {
         code_ = 400;
         status = CODE_STATUS.find(400)->second;
     }
-    buff->Append("HTTP/1.1 " + std::to_string(code_) + " " + status + "\r\n");
+    buff->Append("HTTP/1.0 " + std::to_string(code_) + " " + status + "\r\n");
 }
 
 // 设置响应头部
@@ -126,12 +126,13 @@ void HttpResponse::AddHeader_(Buffer *buff) {
 // 设置响应正文
 void HttpResponse::AddContent_(Buffer *buff) {
     int src_fd = open((src_dir_ + path_).data(), O_RDONLY);
-    std::cout << src_dir_ + path_ << " fd: " << src_fd << std::endl; 
+    // std::cout << src_dir_ + path_ << " fd: " << src_fd << std::endl; 
     if (src_fd < 0) {
-        ErrorContent(buff, "src_fd < 0 File NotFound!");
-        return;
+      std::string message = src_dir_ + path_ + " File NotFound!";
+      ErrorContent(buff, message);
+      return;
     }
-    printf("file path: %s", (src_dir_ + path_).data());
+    LOG_INFO("file path: %s", (src_dir_ + path_).data());
     // 内存映射，获取文件内容
     int* mm_ret = (int*)mmap(0, mm_file_stat_.st_size, PROT_READ, MAP_PRIVATE, src_fd, 0);
     if (*mm_ret == -1) {

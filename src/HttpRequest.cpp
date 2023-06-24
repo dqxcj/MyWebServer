@@ -1,6 +1,6 @@
 #include "HttpRequest.h"
-#include "buffer.h"
-#include "log.h"
+#include "Buffer.h"
+#include "Log.h"
 
 const std::unordered_set<std::string> HttpRequest::DEFAULT_HTML{
             "/index", "/register", "/login",
@@ -24,7 +24,7 @@ bool HttpRequest::ParseRequestLine_(const std::string& line) {
         state_ = HEADERS;
         return true;
     }
-    printf("RequestLine Error: %s\n", line.c_str());
+    LOG_ERROR("RequestLine Error: %s\n", line.c_str());
     return false;
 }
 
@@ -58,7 +58,7 @@ void HttpRequest::ParseBody_(const std::string& line) {
     body_ = line;
     // ParsePost_();
     state_ = FINISH;
-    printf("Body:%s, len:%ld\n", body_.c_str(), body_.size());
+    LOG_INFO("Body:%s, len:%ld\n", body_.c_str(), body_.size());
 }
 
 // 解析HTTP请求
@@ -104,7 +104,7 @@ bool HttpRequest::parse(Buffer *buff) {
 std::string HttpRequest::path() const { return path_; }
 
 std::string& HttpRequest::path() {
-  std::cout << "HttpRequest::path()" << std::endl;
+//   std::cout << "HttpRequest::path()" << std::endl;
   return path_; 
 }
 
@@ -133,6 +133,6 @@ bool HttpRequest::IsKeepAlive() const {
         // 注意1.1以上版本才支持长连接
         return header_.find("Connection")->second == "keep-alive" && version_ == "1.1";
     }
-    std::cout << "HttpRequest::IsKeepAlive()" << std::endl;
+    // std::cout << "HttpRequest::IsKeepAlive()" << std::endl;
     return false;
 }

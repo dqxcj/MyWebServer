@@ -5,6 +5,7 @@
 
 #include <functional>
 #include <iostream>
+#include <memory>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -18,7 +19,7 @@ class ThreadPool;
 
 class Server {
  public:
-  explicit Server(EventLoop *loop);
+  explicit Server(std::shared_ptr<EventLoop> loop, const std::string &serv_ip = "127.0.0.1", uint16_t serv_port = 55555);
   ~Server();
 
   void NewConnection(Socket *clnt);
@@ -26,7 +27,7 @@ class Server {
   void HandleReadEvent(int rw_fd);
 
  private:
-  EventLoop *main_reactor_;                                // 主reactor 负责处理连接
+  std::shared_ptr<EventLoop> main_reactor_;                // 主reactor 负责处理连接
   Acceptor *acceptor_;                                     // 连接器
   std::unordered_map<int, Connection *> tcp_connections_;  // 所有tcp连接
   std::vector<EventLoop *> sub_reactors_;                  // 副reactor 负责业务逻辑

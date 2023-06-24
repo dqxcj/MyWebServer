@@ -7,19 +7,20 @@
 #include "include/Acceptor.h"
 #include <iostream>
 
-Acceptor::Acceptor(EventLoop *loop) : loop_(loop) {
-  serv_sock_ = new Socket();
-  InetAddress *serv_addr_ = new InetAddress("127.0.0.1", 80);
-  serv_sock_->Bind(serv_addr_);
+Acceptor::Acceptor(EventLoop *loop, const std::string &serv_ip, uint16_t serv_port) : 
+  loop_(loop),
+  serv_sock_(new Socket()),
+  acceptor_channel_(new Channel(serv_sock_->GetFd(), loop_))  {
+
+  auto serv_addr = std::make_shared<InetAddress>(serv_ip, serv_port);
+  serv_sock_->Bind(serv_addr);
   serv_sock_->Listen();
   // serv_sock_->SetNonBlock();
 
-  acceptor_channel_ = new Channel(serv_sock_->GetFd(), loop_);
   std::function<void()> call_back = std::bind(&Acceptor::HandleNewConnection, this);
   acceptor_channel_->SetReadCallBack(std::move(call_back));
   acceptor_channel_->EnableRead();
   acceptor_channel_->SetUseThreadPool(false);
-  delete serv_addr_;
 }
 
 Acceptor::~Acceptor() {
@@ -30,7 +31,7 @@ Acceptor::~Acceptor() {
 void Acceptor::HandleNewConnection() {
   InetAddress *clnt_addr = new InetAddress();
   Socket *clnt_sock = new Socket(serv_sock_->Accept(clnt_addr));
-  std::cout << "clnt_fd: " << clnt_sock->GetFd() << std::endl;
+  // std::cout << "clnt_fd: " << clnt_sock->GetFd() << std::endl;
   new_connection_call_back_(clnt_sock);
 }
 

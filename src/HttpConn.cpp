@@ -1,9 +1,9 @@
 #include "HttpConn.h"
 #include "HttpRequest.h"
 #include "HttpResponse.h"
-#include "buffer.h"
+#include "Buffer.h"
 #include "unistd.h"
-#include "log.h"
+#include "Log.h"
 
 std::atomic<int> HttpConn::userCount;
 
@@ -16,7 +16,7 @@ HttpConn::HttpConn()
       write_buffer_(new Buffer(1024)),
       request_(new HttpRequest()),
       response_(new HttpResponse()),
-      src_dir_("/home/ljy/MyWebServer") {}
+      src_dir_("/home/admin/MyWebServer") {}
 
 HttpConn::~HttpConn() {
     Close();
@@ -49,7 +49,7 @@ int HttpConn::GetFd() const {
 }
 
 // 读数据到读缓冲区
-ssize_t HttpConn::read() {
+ssize_t HttpConn::Read() {
     ssize_t len = 0;
     // do-while，非ET模式只运行一次，ET模式则循环
     do {
@@ -62,19 +62,22 @@ ssize_t HttpConn::read() {
     return len;
 }
 
-ssize_t HttpConn::write() {
+ssize_t HttpConn::Write() {
     ssize_t len = -1;
     // 采用do-while，非ET模式只写一次，ET模式循环写
     do {
         // 分散写
         len = writev(fd_, iov_, iov_cnt_);
-         writev(1, iov_, iov_cnt_);
+        //  writev(1, iov_, iov_cnt_);
         if (len <= 0) {
             break;
         }
 
         // 写完了
-        if (iov_[0].iov_len + iov_[1].iov_len == 0) { break; }
+        if (iov_[0].iov_len + iov_[1].iov_len == 0) { 
+            write(fd_, "\0", 1);
+            break; 
+        }
         
         // 开始写第二个iov了
         if (static_cast<size_t>(len) > iov_[0].iov_len) {
@@ -100,16 +103,16 @@ bool HttpConn::process() {
     if (read_buffer_->ReadableBytes() <= 0) {
         return false;
     }
-    std::cout << "ccc" << std::endl;
+    // std::cout << "ccc" << std::endl;
     if (request_->parse(read_buffer_)) {
-        std::cout << request_->path() << std::endl;
+        // std::cout << request_->path() << std::endl;
         response_->Init(src_dir_, request_->path(), request_->IsKeepAlive(), 200);
     } else {  // parse failed
         response_->Init(src_dir_, request_->path(), false, 400);
     }
-    std::cout << "bbb" << std::endl;
+    // std::cout << "bbb" << std::endl;
     response_->MakeResponse(write_buffer_);
-    std::cout << "aaa" << std::endl;
+    // std::cout << "aaa" << std::endl;
     iov_[0].iov_base = const_cast<char*>(write_buffer_->Peek());
     iov_[0].iov_len = write_buffer_->ReadableBytes();
     iov_cnt_ = 1;

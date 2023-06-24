@@ -13,7 +13,7 @@ Connection::Connection(EventLoop *loop, Socket *clnt) : loop_(loop), clnt_(clnt)
   channel_->EnableRead();
   clnt_->SetNonBlock();
   channel_->UseET();
-  std::cout << "clnt fd: " << clnt_->GetFd() << std::endl;
+  // std::cout << "clnt fd: " << clnt_->GetFd() << std::endl;
   std::function<void()> call_back = std::bind(&Connection::HttpServer, this, clnt_);
   channel_->SetReadCallBack(std::move(call_back));
   channel_->SetUseThreadPool(true);
@@ -54,13 +54,13 @@ void Connection::SetDeleteConnectionCallBack(std::function<void(Socket *)> delet
 
 // http业务逻辑
 void Connection::HttpServer(Socket *clnt) {
-  std::cout<< "HttpServer clnt_fd: " << clnt->GetFd() << std::endl;
+  // std::cout<< "HttpServer clnt_fd: " << clnt->GetFd() << std::endl;
   HttpConn *http = new HttpConn();
   http->init(clnt->GetFd());
   http->SetIsET(true);
-  http->read();
-  std::cout << "http will process" << std::endl;
+  http->Read();
+  // std::cout << "http will process" << std::endl;
   http->process();
-  std::cout << "http will write" << std::endl;
-  http->write();
+  // std::cout << "http will write" << std::endl;
+  http->Write();
 }

@@ -25,14 +25,14 @@ int main() {
     // std::cin >> buf;
     ssize_t write_len = write(sockfd, buf, sz);
     ErrIf(write_len == -1, "client error: write to server");
-    std::cout << "client send " << write_len << " bytes to server " << inet_ntoa(serv_addr.sin_addr) << std::endl;
+    // std::cout << "client send " << write_len << " bytes to server " << inet_ntoa(serv_addr.sin_addr) << std::endl;
 
     bzero(buf, sz);
     ssize_t read_len = read(sockfd, buf, sz);
     if (read_len > 0) {
-      std::cout << read_len << " bytes message from server fd " << sockfd << ": " << buf << std::endl;
+      // std::cout << read_len << " bytes message from server fd " << sockfd << ": " << buf << std::endl;
     } else if (read_len == 0) {
-      std::cout << "server fd " << sockfd << " disconnected" << std::endl;
+      // std::cout << "server fd " << sockfd << " disconnected" << std::endl;
       // break;
     } else if (read_len == -1) {
       close(sockfd);

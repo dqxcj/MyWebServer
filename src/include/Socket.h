@@ -13,7 +13,7 @@ class Socket {
 
   explicit Socket(int fd);
 
-  void Bind(InetAddress *addr);
+  void Bind(const std::shared_ptr<InetAddress> &addr);
 
   void Listen();
 

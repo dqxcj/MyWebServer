@@ -22,8 +22,10 @@ class Connection {
   Connection(EventLoop *loop_, Socket *clnt);
   ~Connection();
   // void Echo(int rw_fd);
+
+  // 设置 连接删除 回调函数
   void SetDeleteConnectionCallBack(std::function<void(Socket *)> delete_connection_call_back);
-  
+
   // http业务逻辑
   void HttpServer(Socket *clnt);
 

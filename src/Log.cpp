@@ -1,7 +1,17 @@
-#include "log.h"
+#include "Log.h"
 #include <cstdio>
-#include "blockqueue.h"
-#include "buffer.h"
+#include "Blockqueue.h"
+#include "Buffer.h"
+
+#include <csignal>
+#include <unistd.h>
+
+// 信号处理函数
+void SignalHandler(int signal) {
+  if (signal == SIGINT || signal == SIGTERM || signal == SIGHUP || signal == SIGQUIT) {
+    Log::Instance()->flush();
+  }
+}
 
 Log::Log() {
     lineCount_ = 0;
@@ -27,7 +37,12 @@ void Log::SetLevel(int level) {
 
 // 初始化阻塞队列、异步线程、日志文件
 void Log::init(int level, const char* path, const char* suffix, int maxQueueSize) {
-    std::cout << "log::init" << std::endl;
+    // std::cout << "log::init" << std::endl;
+    // 注册针对退出信号的信号处理函数 防止各种原因退出时未写入文件的日志丢失
+    std::signal(SIGINT, SignalHandler);
+    std::signal(SIGTERM, SignalHandler);
+    std::signal(SIGHUP, SignalHandler);
+    std::signal(SIGQUIT, SignalHandler);
     isOpen_ = true;
     level_ = level;
     if (maxQueueSize > 0) {
@@ -65,20 +80,20 @@ void Log::init(int level, const char* path, const char* suffix, int maxQueueSize
             flush();
             fclose(fp_);
         }
-        std::cout << "filename: " << fileName << std::endl;
+        // std::cout << "filename: " << fileName << std::endl;
         fp_ = fopen(fileName, "a");
         if (fp_ == nullptr) {
             mkdir(path_, 0777);
             fp_ = fopen(fileName, "a");
         }
-        std::cout << fp_ << std::endl;
+        // std::cout << fp_ << std::endl;
         assert(fp_ != nullptr);
     }
 }
 
 // 将日志信息写入阻塞队列
 void Log::write(int level, const char *format, ...) {
-    std::cout << "Log::write" << std::endl;
+    // std::cout << "Log::write" << std::endl;
     struct timeval now = {0, 0};
     gettimeofday(&now, nullptr);
     time_t tSec = now.tv_sec;
@@ -131,7 +146,7 @@ void Log::write(int level, const char *format, ...) {
         if (isAsync_ && deque_ && !deque_->full()) {
           std::string str = buff_->RetrieveAllToStr();
           deque_->push_back(str);
-          std::cout << deque_->size() << " " << str << std::endl;
+        //   std::cout << deque_->size() << " " << str << std::endl;
         } else {    // 直接写意味着这一步不是异步的，而且这一条日志可能会和其他日志时间顺序错乱
             fputs(buff_->Peek(), fp_);
         }
@@ -186,7 +201,7 @@ Log* Log::Instance() {
 void Log::AsyncWrite_() {
   std::string str = "";
   while (deque_->pop(str)) {
-    std::cout << "write to file: " << str << std::endl;
+    // std::cout << "write to file: " << str << std::endl;
     std::lock_guard<std::mutex> locker(mtx_);
     fputs(str.c_str(), fp_);  // fp_ 为 FILE* 类型
   }

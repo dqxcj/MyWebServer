@@ -5,11 +5,14 @@
 #include "EventLoop.h"
 #include "Socket.h"
 #include "ThreadPool.h"
-#include "log.h"
+#include "Log.h"
 
-Server::Server(EventLoop *loop) : main_reactor_(loop) {
+#include <unistd.h>
+#include <string.h>
+
+Server::Server(std::shared_ptr<EventLoop> &loop, const std::string &serv_ip, uint16_t &serv_port) : main_reactor_(std::move(loop)) {
   // 将main_reactor绑定到acceptor_上，专门处理tcp连接
-  acceptor_ = new Acceptor(main_reactor_);
+  acceptor_ = new Acceptor(main_reactor_, serv_ip, serv_port);
   std::function<void(Socket *)> call_back = std::bind(&Server::NewConnection, this, std::placeholders::_1);
   acceptor_->SetNewConnectionCallBack(std::move(call_back));
 
@@ -30,9 +33,14 @@ Server::Server(EventLoop *loop) : main_reactor_(loop) {
     thpoll->AddTask(std::move(func));
   }
 
-  Log::Instance()->init(1, "./log", ".log", 1024);
+  char pwd_path[128];
+  getcwd(pwd_path, sizeof(pwd_path));
+  const char *log_path = strcat(pwd_path, "/log");
+  Log::Instance()->init(1, log_path, ".log", 1024);
   LOG_INFO("========== Server init==========");
   LOG_INFO("thread num: %d", cnt);
+  LOG_INFO("pwd: %s", pwd_path);
+  LOG_INFO("log path: %s", log_path);
 }
 
 Server::~Server() {

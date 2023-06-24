@@ -9,7 +9,7 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <sys/stat.h>
-#include "blockqueue.h"
+#include "Blockqueue.h"
 
 class Buffer;
 

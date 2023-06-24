@@ -23,8 +23,8 @@ public:
     void Close();
     int GetFd() const;
 
-    ssize_t read();
-    ssize_t write();
+    ssize_t Read();
+    ssize_t Write();
 
     bool process();
 
