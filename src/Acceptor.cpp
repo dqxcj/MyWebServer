@@ -7,10 +7,10 @@
 #include "include/Acceptor.h"
 #include <iostream>
 
-Acceptor::Acceptor(EventLoop *loop, const std::string &serv_ip, uint16_t serv_port) : 
+Acceptor::Acceptor(std::shared_ptr<EventLoop> loop, const std::string &serv_ip, uint16_t serv_port) : 
   loop_(loop),
-  serv_sock_(new Socket()),
-  acceptor_channel_(new Channel(serv_sock_->GetFd(), loop_))  {
+  serv_sock_(std::make_shared<Socket>()),
+  acceptor_channel_(std::make_shared<Channel>(serv_sock_->GetFd(), loop_))  {
 
   auto serv_addr = std::make_shared<InetAddress>(serv_ip, serv_port);
   serv_sock_->Bind(serv_addr);
@@ -25,20 +25,19 @@ Acceptor::Acceptor(EventLoop *loop, const std::string &serv_ip, uint16_t serv_po
 
 Acceptor::~Acceptor() {
   // delete serv_sock_;
-  delete acceptor_channel_;
 }
 
 void Acceptor::HandleNewConnection() {
-  InetAddress *clnt_addr = new InetAddress();
-  Socket *clnt_sock = new Socket(serv_sock_->Accept(clnt_addr));
+  auto clnt_addr = std::make_shared<InetAddress>();
+  auto clnt_sock = std::make_shared<Socket>(serv_sock_->Accept(clnt_addr));
   // std::cout << "clnt_fd: " << clnt_sock->GetFd() << std::endl;
   new_connection_call_back_(clnt_sock);
 }
 
-void Acceptor::SetNewConnectionCallBack(std::function<void(Socket *)> &&new_connection_call_back) {
+void Acceptor::SetNewConnectionCallBack(std::function<void(std::shared_ptr<Socket>)> &&new_connection_call_back) {
   new_connection_call_back_ = new_connection_call_back;
 }
 
-Socket *Acceptor::GetServSocket() {
+std::shared_ptr<Socket> Acceptor::GetServSocket() {
   return serv_sock_;
 }

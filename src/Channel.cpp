@@ -1,7 +1,7 @@
 #include "Channel.h"
 #include "EventLoop.h"
 
-Channel::Channel(int fd, EventLoop *loop)
+Channel::Channel(int fd, std::shared_ptr<EventLoop> loop)
     : fd_(fd), loop_(loop), events_(0), the_moment_events_(0), is_in_epoll_(false), use_thread_pool_(true) {}
 
 Channel::~Channel() {

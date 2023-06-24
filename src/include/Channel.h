@@ -6,12 +6,13 @@
 #include <unistd.h>
 
 #include <functional>
+#include <memory>
 
 class EventLoop;
 
 class Channel {
  public:
-  Channel(int fd, EventLoop *loop);
+  Channel(int fd, std::shared_ptr<EventLoop> loop);
   ~Channel();
 
   int GetFd();
@@ -30,7 +31,7 @@ class Channel {
 
  private:
   int fd_;           // 对应的文件描述符
-  EventLoop *loop_;  // 对应的EventLoop
+  std::shared_ptr<EventLoop> loop_;  // 对应的EventLoop
   uint32_t events_;  // 要监听的事件类型
   uint32_t the_moment_events_;  // 在该fd上正在发生的事件类型，也就是调用epoll_wait时该fd上发生的事件类型
   bool is_in_epoll_;                       // 该fd是否加入了epoll的事件表

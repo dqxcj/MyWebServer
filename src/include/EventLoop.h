@@ -2,6 +2,7 @@
 #define SRC_INCLUDE_EVENTLOOP_H_
 #include <functional>
 #include <vector>
+#include <memory>
 
 class Epoll;
 class Channel;
@@ -12,12 +13,14 @@ class EventLoop {
   EventLoop();
   ~EventLoop();
   void Loop();
+  // 更新相应的event
+  // 裸指针是为了更好地与内核交流
   void UpdateChannel(Channel *channel);
   void AddTask(std::function<void()> func);
 
  private:
-  Epoll *ep_;
-  ThreadPool *thread_pool_;
+  std::unique_ptr<Epoll> ep_;
+  std::unique_ptr<ThreadPool> thread_pool_;
   bool stop_;
 };
 

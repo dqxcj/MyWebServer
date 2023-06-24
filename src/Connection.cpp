@@ -1,4 +1,5 @@
 #include "Connection.h"
+#include <memory>
 #include "Buffer.h"
 #include "Channel.h"
 #include "EventLoop.h"
@@ -8,8 +9,8 @@
 
 const int READ_BUFFER = 1024;
 
-Connection::Connection(EventLoop *loop, Socket *clnt) : loop_(loop), clnt_(clnt) {
-  channel_ = new Channel(clnt_->GetFd(), loop_);
+Connection::Connection(std::shared_ptr<EventLoop> loop, std::shared_ptr<Socket> clnt) : loop_(loop), clnt_(clnt) {
+  channel_ = std::make_shared<Channel>(clnt_->GetFd(), loop_);
   channel_->EnableRead();
   clnt_->SetNonBlock();
   channel_->UseET();
@@ -20,7 +21,6 @@ Connection::Connection(EventLoop *loop, Socket *clnt) : loop_(loop), clnt_(clnt)
   // read_buffer_ = new Buffer();
 }
 Connection::~Connection() {
-  delete channel_;
   // delete read_buffer_;
 }
 // void Connection::Echo(int rw_fd) {
@@ -48,14 +48,14 @@ Connection::~Connection() {
 //     }
 //   }
 // }
-void Connection::SetDeleteConnectionCallBack(std::function<void(Socket *)> delete_connection_call_back) {
+void Connection::SetDeleteConnectionCallBack(std::function<void(std::shared_ptr<Socket>)> delete_connection_call_back) {
   delete_connection_call_back_ = delete_connection_call_back;
 }
 
 // http业务逻辑
-void Connection::HttpServer(Socket *clnt) {
+void Connection::HttpServer(std::shared_ptr<Socket> clnt) {
   // std::cout<< "HttpServer clnt_fd: " << clnt->GetFd() << std::endl;
-  HttpConn *http = new HttpConn();
+  auto http = std::make_shared<HttpConn>();
   http->init(clnt->GetFd());
   http->SetIsET(true);
   http->Read();
@@ -63,4 +63,5 @@ void Connection::HttpServer(Socket *clnt) {
   http->process();
   // std::cout << "http will write" << std::endl;
   http->Write();
+  delete_connection_call_back_(clnt);
 }

@@ -4,6 +4,7 @@
 
 #include <functional>
 #include <iostream>
+#include <memory>
 
 class Socket;
 class Channel;
@@ -19,24 +20,24 @@ class Connection {
     Closed,      // 已关闭
     Failed,      // 失败
   };
-  Connection(EventLoop *loop_, Socket *clnt);
+  Connection(std::shared_ptr<EventLoop> loop, std::shared_ptr<Socket> clnt);
   ~Connection();
   // void Echo(int rw_fd);
 
   // 设置 连接删除 回调函数
-  void SetDeleteConnectionCallBack(std::function<void(Socket *)> delete_connection_call_back);
+  void SetDeleteConnectionCallBack(std::function<void(std::shared_ptr<Socket>)> delete_connection_call_back);
 
   // http业务逻辑
-  void HttpServer(Socket *clnt);
+  void HttpServer(std::shared_ptr<Socket> clnt);
 
  private:
-  EventLoop *loop_;
-  Channel *channel_{nullptr};
-  Socket *clnt_;
+  std::shared_ptr<EventLoop> loop_;
+  std::shared_ptr<Channel> channel_;
+  std::shared_ptr<Socket> clnt_;
   // Buffer *read_buffer_{nullptr};
   // Buffer *write_buffer_{nullptr};
   State state_{State::Invalid};
-  std::function<void(Socket *)> delete_connection_call_back_;
+  std::function<void(std::shared_ptr<Socket>)> delete_connection_call_back_;
   std::function<void(Connection *)> on_connect_call_back_;
 };
 

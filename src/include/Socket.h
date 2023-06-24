@@ -17,13 +17,13 @@ class Socket {
 
   void Listen();
 
-  int Accept(InetAddress *clnt_addr);
+  int Accept(std::shared_ptr<InetAddress> clnt_addr);
 
   int GetFd();
 
   void SetNonBlock();
 
-  void Connect(InetAddress *serv_addr);
+  void Connect(std::shared_ptr<InetAddress> serv_addr);
 
  private:
   int fd_;  // 该socket的文件描述符

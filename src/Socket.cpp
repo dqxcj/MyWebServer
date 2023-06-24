@@ -18,7 +18,7 @@ void Socket::Bind(const std::shared_ptr<InetAddress> &addr) {
 
 void Socket::Listen() { ErrIf(listen(fd_, SOMAXCONN) == -1, "server error: listen()"); }
 
-int Socket::Accept(InetAddress *clnt_addr) {
+int Socket::Accept(std::shared_ptr<InetAddress> clnt_addr) {
   int clnt_sockfd = accept(fd_, (sockaddr *)&(clnt_addr->addr_), &(clnt_addr->addr_len_));
   ErrIf(clnt_sockfd == -1, "server error: accept()");
   // std::cout << "new client fd " << clnt_sockfd << "! Ip: " << inet_ntoa(clnt_addr->addr_.sin_addr)
@@ -32,6 +32,6 @@ void Socket::SetNonBlock() {
   fcntl(fd_, F_SETFL, fcntl(fd_, F_GETFL) | O_NONBLOCK);  // 设置成非阻塞
 }
 
-void Socket::Connect(InetAddress *serv_addr) {
+void Socket::Connect(std::shared_ptr<InetAddress> serv_addr) {
   ErrIf(connect(fd_, (sockaddr *)&serv_addr->addr_, serv_addr->addr_len_) == -1, "client error: accept()");
 }

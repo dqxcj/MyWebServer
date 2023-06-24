@@ -3,11 +3,9 @@
 #include "Epoll.h"
 #include "ThreadPool.h"
 
-EventLoop::EventLoop() : ep_(new Epoll()), thread_pool_(new ThreadPool(4)), stop_(true) {}
+EventLoop::EventLoop() : ep_(std::make_unique<Epoll>()), thread_pool_(std::make_unique<ThreadPool> (4)), stop_(true) {}
 
 EventLoop::~EventLoop() {
-  delete ep_;
-  delete thread_pool_;
   stop_ = true;
 }
 
