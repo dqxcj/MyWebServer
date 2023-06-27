@@ -1,1 +1,0 @@
-/usr/bin/clang++-14   -O2 -g -g  -rdynamic CMakeFiles/serv.dir/server.cpp.o  -o ../../bin/serv  -lpthread ../../lib/libserver.a -lpthread 
