@@ -31,6 +31,14 @@ public:
 
     // 新增节点
     void Add(TimeNode node);
+
+    // 获取距离下一次超时时间的时间间隔
+    int GetNextOutTime();
+
+   private:
+    std::vector<TimeNode> heap_;                          // 用vector来模拟堆
+    std::unordered_map<int, size_t> fd_to_index_;  // 通过fd快速找到vector索引
+
     // 获取顶部节点
     TimeNode Top();
     // 弹出顶部节点
@@ -42,9 +50,8 @@ public:
     // 调整指定节点
     void Adjust(size_t index);
 
-   private:
-    std::vector<TimeNode> heap_;                          // 用vector来模拟堆
-    std::unordered_map<int, size_t> fd_to_index_;  // 通过fd快速找到vector索引
+    // 清除超时节点
+    void ClearOutTimeNode();
 };
 
 #endif  // SRC_INCLUDE_HEAPTIMER_H_

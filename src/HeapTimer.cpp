@@ -1,5 +1,6 @@
 #include "HeapTimer.h"
 #include <cassert>
+#include "HttpRequest.h"
 
 HeapTimer::HeapTimer()=default;
 
@@ -49,4 +50,34 @@ void HeapTimer::Adjust(size_t index) {
     if (index >= heap_.size()) {
         return;
     }
+}
+
+// 清除超时节点
+void HeapTimer::ClearOutTimeNode() {
+    if (heap_.empty()) {
+        return;
+    }
+    while (!heap_.empty()) {
+        TimeNode node = heap_.front();
+        if (std::chrono::duration_cast<Ms>(node.time_out_ - Clock::now()).count() > 0) {
+            break;
+        }
+        node.time_out_callback_();
+        Pop();
+    }
+}
+
+// 获取距离下一次超时时间的时间间隔
+int HeapTimer::GetNextOutTime() {
+    ClearOutTimeNode();
+    int res = -1;
+    if (!heap_.empty()) {
+        res = int(std::chrono::duration_cast<Ms>(heap_.front().time_out_ - Clock::now()).count());
+        if (res < 0) {
+            res = 0;
+        }
+    }
+    return res;
+
+    
 }
