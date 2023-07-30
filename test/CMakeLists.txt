@@ -10,4 +10,6 @@ set(EXECUTABLE_OUTPUT_PATH ${EXEC_PATH})
 # 生成可执行程序
 add_executable(${APP_NAME_SERV} server.cpp)
 add_executable(${APP_NAME_CLNT} client.cpp)
+add_executable(${APP_NAME_HEAPTIMER_TEST} HeapTimerTest.cpp)
+add_executable(${APP_NAME_MINHEAPWITHHASH_TEST} MinHeapWithHashTest)
 

@@ -29,6 +29,8 @@ set(WEBSERVER_LIB server)
 # 可执行程序的名字
 set(APP_NAME_SERV serv)
 set(APP_NAME_CLNT clnt)
+set(APP_NAME_HEAPTIMER_TEST HeapTimerTest)
+set(APP_NAME_MINHEAPWITHHASH_TEST MinHeapWithHashTest)
 
 # 添加子目录
 add_subdirectory(src)

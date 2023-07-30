@@ -1,5 +1,7 @@
 #include "HeapTimer.h"
 #include <cassert>
+#include <cstddef>
+#include <type_traits>
 #include "HttpRequest.h"
 
 HeapTimer::HeapTimer()=default;
@@ -36,12 +38,52 @@ void HeapTimer::SiftDown(size_t index) {
         return ;
     }
 
+    while(true) {
+        size_t left = index * 2;
+        size_t right = index * 2 + 1;
 
+        if(left >= heap_.size()) {
+            break;      // heap_[index] 无子节点
+        }
+
+        if(right >= heap_.size()) {
+            right = left;   // heap_[index] 只有左子节点
+        }
+
+        size_t min_child = left;
+        if(heap_[right] < heap_[min_child]) {
+            min_child = right;
+        }
+
+        if(heap_[min_child] < heap_[index]) {
+            std::swap(heap_[index], heap_[min_child]);
+            fd_to_index_[heap_[index].socket_fd_] = index;
+            fd_to_index_[heap_[min_child].socket_fd_] = min_child;
+        } else {
+            break;      // heap_[index]的子节点都比自己大
+        }
+    }
 }
 // 向上调整
 void HeapTimer::SiftUp(size_t index) {
     if (index >= heap_.size()) {
         return;
+    }
+
+    while(true) {
+        size_t father = index / 2;
+
+        if (index == 0 || heap_[father] < heap_[index]) {
+            break;
+        }
+
+        if(heap_[index] < heap_[father]) {
+            std::swap(heap_[index], heap_[father]);
+            fd_to_index_[heap_[index].socket_fd_] = index;
+            fd_to_index_[heap_[father].socket_fd_] = father;
+        }
+
+        index = father;
     }
 }
 
@@ -50,6 +92,9 @@ void HeapTimer::Adjust(size_t index) {
     if (index >= heap_.size()) {
         return;
     }
+
+    SiftUp(index);
+    SiftDown(index);
 }
 
 // 清除超时节点
@@ -80,4 +125,8 @@ int HeapTimer::GetNextOutTime() {
     return res;
 
     
+}
+
+bool HeapTimer::Empty() {
+    return heap_.empty();
 }
