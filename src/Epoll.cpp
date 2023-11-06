@@ -28,23 +28,23 @@ Epoll::Epoll(int flags, int max_events_num) : max_events_num_(max_events_num), e
   }
 }
 
-/**
- * @description: 封装了epoll_ctl函数的ADD功能
- * @param {int} fd 要操作的文件描述符
- * @param {uint32_t} events_flag 事件类型
- * @param {bool} is_no_block 是否将fd设置为非阻塞
- * @return {void}
- */
-void Epoll::AddFd(int fd, uint32_t events_flag, bool is_no_block) {
-  epoll_event ev;
-  memset(&ev, 0, sizeof(ev));
-  ev.data.fd = fd;
-  ev.events = events_flag;  // 模式
-  if (is_no_block) {
-    fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);  // 设置成非阻塞
-  }
-  ErrIf(epoll_ctl(epfd_, EPOLL_CTL_ADD, fd, &ev) == -1, "server error: epoll_ctl()");
-}
+// /**
+//  * @description: 封装了epoll_ctl函数的ADD功能
+//  * @param {int} fd 要操作的文件描述符
+//  * @param {uint32_t} events_flag 事件类型
+//  * @param {bool} is_no_block 是否将fd设置为非阻塞
+//  * @return {void}
+//  */
+// void Epoll::AddFd(int fd, uint32_t events_flag, bool is_no_block) {
+//   epoll_event ev;
+//   memset(&ev, 0, sizeof(ev));
+//   ev.data.fd = fd;
+//   ev.events = events_flag;  // 模式
+//   if (is_no_block) {
+//     fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);  // 设置成非阻塞
+//   }
+//   ErrIf(epoll_ctl(epfd_, EPOLL_CTL_ADD, fd, &ev) == -1, "server error: epoll_ctl()");
+// }
 
 /**
  * @description: 封装了epoll_wait函数
